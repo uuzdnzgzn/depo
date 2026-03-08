@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Editör</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  :root { --bg:#0f0f13; --surface:#16161d; --surface2:#1e1e28; --border:#2a2a38; --accent:#5b8dee; --accent2:#7c6af5; --text:#e8e8f0; --muted:#6b6b80; --danger:#f05060; --success:#3ecf8e; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+  .topbar{height:52px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;flex-shrink:0;}
+  .logo{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
+  .div{width:1px;height:24px;background:var(--border);}
+  .sp{flex:1;}
+  .btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:none;border-radius:6px;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .btn svg{width:13px;height:13px;}
+  .g{background:transparent;color:var(--muted);border:1px solid var(--border);}
+  .g:hover{background:var(--surface2);color:var(--text);border-color:var(--accent);}
+  .s{background:var(--success);color:#0f1a14;}
+  .s:hover{background:#35b87e;}
+  .d{background:transparent;color:var(--danger);border:1px solid var(--border);}
+  .d:hover{background:rgba(240,80,96,.1);border-color:var(--danger);}
+  .pi{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);padding:4px 10px;background:var(--surface2);border-radius:4px;border:1px solid var(--border);min-width:60px;text-align:center;}
+  .main{display:flex;flex:1;overflow:hidden;}
+  .sidebar{width:210px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+  .sh{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .st{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+  .bdc{font-family:'IBM Plex Mono',monospace;font-size:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 7px;color:var(--muted);}
+  .sl{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px;}
+  .sl::-webkit-scrollbar{width:4px;} .sl::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  .th{border-radius:8px;border:2px solid transparent;overflow:hidden;cursor:pointer;transition:all .15s;background:var(--surface2);position:relative;}
+  .th:hover{border-color:var(--accent2);transform:translateX(2px);}
+  .th.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+  .th.dragging{opacity:.35;}
+  .th.dragover{border-color:var(--success);}
+  .th canvas{width:100%;height:auto;display:block;pointer-events:none;}
+  .tl{position:absolute;bottom:0;left:0;right:0;padding:4px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.75);display:flex;justify-content:space-between;align-items:center;pointer-events:none;}
+  .ta{position:absolute;top:4px;right:4px;display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+  .th:hover .ta{opacity:1;}
+  .tb{width:22px;height:22px;border-radius:4px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;}
+  .tu,.td{background:rgba(0,0,0,.65);color:#fff;} .tu:hover,.td:hover{background:rgba(91,141,238,.85);}
+  .tr{background:rgba(124,106,245,.75);color:#fff;} .tr:hover{background:var(--accent2);}
+  .tx{background:rgba(240,80,96,.85);color:#fff;} .tx:hover{background:var(--danger);}
+  .dz{margin:8px;border:2px dashed var(--border);border-radius:8px;padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s;flex-shrink:0;}
+  .dz:hover,.dz.over{border-color:var(--accent);background:rgba(91,141,238,.06);}
+  .dzi{font-size:18px;margin-bottom:4px;}
+  .dzt{font-size:11px;color:var(--muted);line-height:1.5;}
+  .dzt b{color:var(--accent);font-weight:500;}
+  .viewer{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#0a0a10;}
+  .vb{padding:8px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+  .zc{display:flex;align-items:center;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 6px;}
+  .zc button{background:none;border:none;color:var(--text);cursor:pointer;padding:2px 7px;border-radius:3px;font-size:15px;transition:background .1s;}
+  .zc button:hover{background:var(--border);}
+  .zv{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);min-width:42px;text-align:center;}
+  .cw{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:24px;}
+  .cw::-webkit-scrollbar{width:6px;height:6px;} .cw::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  #mc{border-radius:4px;box-shadow:0 8px 40px rgba(0,0,0,.7);max-width:100%;}
+  .ni{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);min-width:60px;text-align:center;}
+  .emp{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);}
+  .ei{width:80px;height:80px;border-radius:20px;background:var(--surface2);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:32px;}
+  .et{font-size:18px;font-weight:500;color:var(--text);}
+  .es{font-size:13px;text-align:center;max-width:280px;line-height:1.5;}
+  .eb{padding:10px 24px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'IBM Plex Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .eb:hover{background:#4a7de0;transform:translateY(-2px);}
+  .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9000;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+  .ov.on{display:flex;}
+  .spin{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .ovt{font-size:14px;color:var(--text);}
+  .ts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:9999;}
+  .to{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;animation:ti .2s ease;border:1px solid;}
+  .ok{background:rgba(62,207,142,.15);border-color:var(--success);color:var(--success);}
+  .er{background:rgba(240,80,96,.15);border-color:var(--danger);color:var(--danger);}
+  .in{background:rgba(91,141,238,.15);border-color:var(--accent);color:var(--accent);}
+  @keyframes ti{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+  #fi{display:none;}
+
+  /* Uyarı banner */
+  .warn-banner{background:rgba(240,80,96,.12);border:1px solid rgba(240,80,96,.3);border-radius:8px;padding:10px 14px;margin:12px;font-size:12px;color:#f8a0a8;line-height:1.5;display:none;}
+  .warn-banner.show{display:block;}
+</style>
+</head>
+<body>
+<div class="ov" id="ov"><div class="spin"></div><div class="ovt" id="ovt">İşleniyor...</div></div>
+
+<div style="background:#0a0a0e;border-bottom:1px solid #1a1a28;padding:0 16px;height:38px;display:flex;align-items:center;gap:8px;flex-shrink:0;">
+  <a href="index.html" style="display:flex;align-items:center;gap:6px;text-decoration:none;color:#888;font-size:12px;font-family:'IBM Plex Sans',sans-serif;transition:color .15s;" onmouseover="this.style.color='#e8ff47'" onmouseout="this.style.color='#888'">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Ana Sayfa
+  </a>
+  <span style="color:#2a2a38;font-size:12px">/</span>
+  <span style="color:#5a5a72;font-size:12px;font-family:'IBM Plex Mono',monospace;">PDF Editör</span>
+</div>
+
+<div class="topbar">
+  <span class="logo">PDF Editör</span>
+  <div class="div"></div>
+  <button class="btn g" onclick="fi.click()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>PDF Ekle
+  </button>
+  <button class="btn g" onclick="rotateCur()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 .49-3.95"/></svg>Döndür
+  </button>
+  <button class="btn g" onclick="splitCur()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M2 12H5M19 12h3"/></svg>Sayfayı Ayır
+  </button>
+  <button class="btn d" onclick="clearAll()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>Temizle
+  </button>
+  <div class="sp"></div>
+  <span class="pi" id="pginfo">— / —</span>
+  <button class="btn s" onclick="mergeAll()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Birleştir & İndir
+  </button>
+</div>
+
+<input type="file" id="fi" accept=".pdf" multiple onchange="loadFiles(this.files)">
+
+<div class="main">
+  <div class="sidebar">
+    <div class="sh"><span class="st">Sayfalar</span><span class="bdc" id="bcnt">0</span></div>
+    <div class="warn-banner" id="wbanner">⚠️ Ağ kısıtlaması nedeniyle sayfa önizlemeleri görüntülenemiyor. Birleştirme ve indirme işlemleri çalışmaya devam eder.</div>
+    <div class="sl" id="sl"></div>
+    <div class="dz" id="dz" onclick="fi.click()">
+      <div class="dzi">📄</div>
+      <div class="dzt"><b>PDF seç</b> veya buraya sürükle</div>
+    </div>
+  </div>
+  <div class="viewer">
+    <div class="vb" id="vbar" style="display:none">
+      <div class="zc">
+        <button onclick="zoomBy(-.25)">−</button>
+        <span class="zv" id="zval">100%</span>
+        <button onclick="zoomBy(+.25)">+</button>
+      </div>
+      <button class="btn g" onclick="fitZ()" style="font-size:11px;padding:4px 10px">Sığdır</button>
+      <div class="sp"></div>
+      <button class="btn g" onclick="prev()" style="padding:4px 12px">‹</button>
+      <span class="ni" id="ni"></span>
+      <button class="btn g" onclick="next()" style="padding:4px 12px">›</button>
+    </div>
+    <div class="cw" id="cw" style="display:none"><canvas id="mc"></canvas></div>
+    <div class="emp" id="emp">
+      <div class="ei">📑</div>
+      <div class="et">PDF Editör</div>
+      <div class="es">PDF dosyalarını görüntüle, sırala, birleştir ve düzenle</div>
+      <button class="eb" onclick="fi.click()">PDF Dosyası Aç</button>
+    </div>
+  </div>
+</div>
+<div class="ts" id="ts"></div>
+
+<script>
+// ─── KÜTÜPHANELERİ YÜKLE (CDN — engelliyse fallback çalışır) ─────────────────
+let _pdfjs = null, _pdflib = null;
+
+function loadScript(src) {
+  return new Promise(res => {
+    if (document.querySelector(`script[src="${src}"]`)) { res(true); return; }
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => res(true);
+    s.onerror = () => res(false);
+    document.head.appendChild(s);
+  });
+}
+
+async function getPDFJS() {
+  if (_pdfjs) return _pdfjs;
+  const ok = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  if (!ok) return null;
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  _pdfjs = pdfjsLib;
+  return _pdfjs;
+}
+
+async function getPDFLIB() {
+  if (_pdflib) return _pdflib;
+  const ok = await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js');
+  if (!ok) return null;
+  _pdflib = window.PDFLib;
+  return _pdflib;
+}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+// page: { bytes, pageIndex, rotation, name, pdfjsDoc|null }
+let pages = [], cur = -1, zoom = 1, dragSrc = null, renderTask = null, noPreview = false;
+
+// ─── DOSYA YÜKLEME ────────────────────────────────────────────────────────────
+async function loadFiles(files) {
+  const arr = [...files].filter(f => f.name.toLowerCase().endsWith('.pdf'));
+  if (!arr.length) { toast('PDF dosyası bulunamadı', 'er'); return; }
+
+  load('PDF yükleniyor...');
+  const pdfjs = await getPDFJS();
+
+  for (const f of arr) {
+    try {
+      const bytes = await f.arrayBuffer();
+      if (pdfjs) {
+        const doc = await pdfjs.getDocument({ data: bytes.slice(0) }).promise;
+        for (let i = 0; i < doc.numPages; i++)
+          pages.push({ bytes, pageIndex: i, rotation: 0, name: f.name, doc });
+        toast(`${f.name} yüklendi (${doc.numPages} sayfa)`, 'ok');
+      } else {
+        // CDN engellenmiş — byte'ları sakla, önizleme olmadan ekle
+        noPreview = true;
+        const n = guessPages(bytes);
+        for (let i = 0; i < n; i++)
+          pages.push({ bytes, pageIndex: i, rotation: 0, name: f.name, doc: null });
+        toast(`${f.name} yüklendi (önizleme kısıtlı)`, 'in');
+      }
+    } catch(e) { toast(`${f.name}: ${e.message}`, 'er'); }
+  }
+
+  if (noPreview) document.getElementById('wbanner').classList.add('show');
+  document.getElementById('fi').value = '';
+  unload();
+  await rebuildSidebar();
+  if (cur === -1 && pages.length) await select(0);
+  updateUI();
+}
+
+function guessPages(bytes) {
+  try {
+    const t = new TextDecoder('latin1').decode(bytes.slice(0, 50000));
+    const m = t.match(/\/Count\s+(\d+)/);
+    if (m) return parseInt(m[1]);
+    const ms = [...t.matchAll(/\/Type\s*\/Page[^s]/g)];
+    if (ms.length) return ms.length;
+  } catch(_) {}
+  return 1;
+}
+
+// ─── SİDEBAR ─────────────────────────────────────────────────────────────────
+async function rebuildSidebar() {
+  const list = document.getElementById('sl');
+  list.innerHTML = '';
+  document.getElementById('bcnt').textContent = pages.length;
+  for (let i = 0; i < pages.length; i++) list.appendChild(await mkThumb(i));
+}
+
+async function mkThumb(i) {
+  const { doc, pageIndex, rotation, name } = pages[i];
+  const div = document.createElement('div');
+  div.className = 'th' + (i === cur ? ' active' : '');
+  div.dataset.i = i;
+  div.draggable = true;
+
+  if (doc) {
+    const pg = await doc.getPage(pageIndex + 1);
+    const vp = pg.getViewport({ scale: 0.28, rotation });
+    const c = document.createElement('canvas');
+    c.width = vp.width; c.height = vp.height;
+    await pg.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+    div.appendChild(c);
+  } else {
+    const ph = document.createElement('div');
+    ph.style.cssText = 'padding:30px 10px;text-align:center;font-size:22px;';
+    ph.textContent = '📄';
+    const phlbl = document.createElement('div');
+    phlbl.style.cssText = 'font-size:10px;color:var(--muted);padding-bottom:8px;text-align:center;';
+    phlbl.textContent = `Sayfa ${i + 1}`;
+    div.appendChild(ph); div.appendChild(phlbl);
+  }
+
+  const lbl = document.createElement('div');
+  lbl.className = 'tl';
+  const sn = name.length > 14 ? name.slice(0, 12) + '…' : name;
+  lbl.innerHTML = `<span>${i+1}</span><span style="font-size:9px;opacity:.6">${sn}</span>`;
+  div.appendChild(lbl);
+
+  const acts = document.createElement('div');
+  acts.className = 'ta';
+  acts.innerHTML = `
+    <button class="tb tu" title="Yukarı"  onclick="mvPg(${i},-1,event)">↑</button>
+    <button class="tb td" title="Aşağı"   onclick="mvPg(${i}, 1,event)">↓</button>
+    <button class="tb tr" title="Döndür"  onclick="rtPg(${i},event)">↻</button>
+    <button class="tb tx" title="Sil"     onclick="dlPg(${i},event)">×</button>`;
+  div.appendChild(acts);
+
+  div.addEventListener('click', () => select(i));
+  div.addEventListener('dragstart', e => { dragSrc = i; setTimeout(() => div.classList.add('dragging'), 0); e.dataTransfer.effectAllowed = 'move'; });
+  div.addEventListener('dragend', () => div.classList.remove('dragging'));
+  div.addEventListener('dragover', e => { e.preventDefault(); div.classList.add('dragover'); });
+  div.addEventListener('dragleave', () => div.classList.remove('dragover'));
+  div.addEventListener('drop', async e => {
+    e.preventDefault(); div.classList.remove('dragover');
+    if (dragSrc !== null && dragSrc !== i) {
+      const mv = pages.splice(dragSrc, 1)[0];
+      pages.splice(dragSrc < i ? i - 1 : i, 0, mv);
+      cur = dragSrc < i ? i - 1 : i;
+      await rebuildSidebar(); await renderPage(); updateUI();
+    }
+    dragSrc = null;
+  });
+  return div;
+}
+
+// ─── GÖRÜNTÜLE ────────────────────────────────────────────────────────────────
+async function select(i) {
+  if (i < 0 || i >= pages.length) return;
+  cur = i;
+  document.querySelectorAll('.th').forEach((el, j) => el.classList.toggle('active', j === i));
+  document.querySelectorAll('.th')[i]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  await renderPage();
+  updateUI();
+}
+
+async function renderPage() {
+  if (cur < 0 || !pages[cur]?.doc) return;
+  if (renderTask) { try { renderTask.cancel(); } catch(_) {} }
+  const { doc, pageIndex, rotation } = pages[cur];
+  const pg = await doc.getPage(pageIndex + 1);
+  const mc = document.getElementById('mc');
+  const cw = document.getElementById('cw');
+  const aw = cw.clientWidth - 48, ah = cw.clientHeight - 48;
+  const base = pg.getViewport({ scale: 1, rotation });
+  const fit = Math.min(aw / base.width, ah / base.height, 2.5);
+  if (zoom === 0) zoom = fit;
+  const vp = pg.getViewport({ scale: zoom, rotation });
+  mc.width = vp.width; mc.height = vp.height;
+  renderTask = pg.render({ canvasContext: mc.getContext('2d'), viewport: vp });
+  try { await renderTask.promise; } catch(_) {}
+  document.getElementById('zval').textContent = Math.round(zoom * 100) + '%';
+}
+
+function fitZ() { zoom = 0; renderPage(); }
+function zoomBy(d) { zoom = Math.max(0.3, Math.min(4, (zoom || 1) + d)); renderPage(); }
+function prev() { if (cur > 0) select(cur - 1); }
+function next() { if (cur < pages.length - 1) select(cur + 1); }
+document.addEventListener('keydown', e => {
+  if (['ArrowLeft','ArrowUp'].includes(e.key)) prev();
+  if (['ArrowRight','ArrowDown'].includes(e.key)) next();
+});
+
+// ─── SAYFA İŞLEMLERİ ─────────────────────────────────────────────────────────
+async function mvPg(i, d, e) {
+  e.stopPropagation();
+  const j = i + d;
+  if (j < 0 || j >= pages.length) return;
+  [pages[i], pages[j]] = [pages[j], pages[i]];
+  if (cur === i) cur = j; else if (cur === j) cur = i;
+  await rebuildSidebar(); await renderPage(); updateUI();
+}
+
+async function rtPg(i, e) {
+  e.stopPropagation();
+  pages[i].rotation = (pages[i].rotation + 90) % 360;
+  const thumbs = document.querySelectorAll('.th');
+  if (thumbs[i]) thumbs[i].replaceWith(await mkThumb(i));
+  if (cur === i) await renderPage();
+}
+
+async function rotateCur() {
+  if (cur < 0) { toast('Önce bir sayfa seçin', 'er'); return; }
+  await rtPg(cur, { stopPropagation: () => {} });
+}
+
+async function dlPg(i, e) {
+  e.stopPropagation();
+  pages.splice(i, 1);
+  if (cur >= pages.length) cur = pages.length - 1;
+  await rebuildSidebar();
+  if (pages.length) await renderPage(); else showEmp();
+  updateUI(); toast('Sayfa silindi', 'in');
+}
+
+async function clearAll() {
+  if (!pages.length) return;
+  pages = []; cur = -1;
+  document.getElementById('sl').innerHTML = '';
+  document.getElementById('bcnt').textContent = '0';
+  document.getElementById('wbanner').classList.remove('show');
+  noPreview = false;
+  showEmp(); updateUI(); toast('Temizlendi', 'in');
+}
+
+// ─── BİRLEŞTİR ───────────────────────────────────────────────────────────────
+async function mergeAll() {
+  if (!pages.length) { toast('Önce PDF ekleyin', 'er'); return; }
+  load('pdf-lib yükleniyor...');
+  const lib = await getPDFLIB();
+  if (!lib) {
+    unload();
+    // Fallback: orijinal dosyaları indirme linkleri aç
+    toast('Kütüphane yüklenemedi — dosyalar ayrı ayrı indiriliyor', 'in');
+    const seen = new Set();
+    for (const pg of pages) {
+      if (!seen.has(pg.bytes)) {
+        seen.add(pg.bytes);
+        dl(new Blob([pg.bytes], { type: 'application/pdf' }), pg.name);
+      }
+    }
+    return;
+  }
+
+  load(`${pages.length} sayfa birleştiriliyor...`);
+  try {
+    const { PDFDocument, degrees } = lib;
+    const out = await PDFDocument.create();
+    const cache = new Map();
+    for (const { bytes, pageIndex, rotation } of pages) {
+      let src = cache.get(bytes);
+      if (!src) { src = await PDFDocument.load(bytes.slice(0), { ignoreEncryption: true }); cache.set(bytes, src); }
+      const [p] = await out.copyPages(src, [pageIndex]);
+      if (rotation) p.setRotation(degrees(rotation));
+      out.addPage(p);
+    }
+    const saved = await out.save();
+    dl(new Blob([saved], { type: 'application/pdf' }), 'birlestirilmis.pdf');
+    toast(`${pages.length} sayfa birleştirildi ✓`, 'ok');
+  } catch(err) { toast('Hata: ' + err.message, 'er'); console.error(err); }
+  unload();
+}
+
+// ─── SAYFAYI AYIR ─────────────────────────────────────────────────────────────
+async function splitCur() {
+  if (cur < 0) { toast('Önce bir sayfa seçin', 'er'); return; }
+  load('İşleniyor...');
+  const lib = await getPDFLIB();
+  if (!lib) {
+    unload();
+    const { bytes, name } = pages[cur];
+    dl(new Blob([bytes], { type: 'application/pdf' }), name);
+    toast('Tam dosya indirildi (tek sayfa için kütüphane gerekiyor)', 'in');
+    return;
+  }
+  try {
+    const { PDFDocument, degrees } = lib;
+    const { bytes, pageIndex, rotation } = pages[cur];
+    const src = await PDFDocument.load(bytes.slice(0), { ignoreEncryption: true });
+    const out = await PDFDocument.create();
+    const [p] = await out.copyPages(src, [pageIndex]);
+    if (rotation) p.setRotation(degrees(rotation));
+    out.addPage(p);
+    const saved = await out.save();
+    dl(new Blob([saved], { type: 'application/pdf' }), `sayfa_${cur + 1}.pdf`);
+    toast(`Sayfa ${cur + 1} indirildi`, 'ok');
+  } catch(err) { toast('Hata: ' + err.message, 'er'); }
+  unload();
+}
+
+// ─── YARDIMCI ─────────────────────────────────────────────────────────────────
+function dl(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function updateUI() {
+  const has = pages.length > 0;
+  document.getElementById('vbar').style.display = has ? 'flex' : 'none';
+  document.getElementById('cw').style.display = has ? 'flex' : 'none';
+  document.getElementById('emp').style.display = has ? 'none' : 'flex';
+  document.getElementById('pginfo').textContent = has ? `${cur + 1} / ${pages.length}` : '— / —';
+  document.getElementById('ni').textContent = has ? `${cur + 1} / ${pages.length}` : '';
+}
+
+function showEmp() {
+  document.getElementById('vbar').style.display = 'none';
+  document.getElementById('cw').style.display = 'none';
+  document.getElementById('emp').style.display = 'flex';
+}
+
+function load(t) { document.getElementById('ovt').textContent = t || 'İşleniyor...'; document.getElementById('ov').classList.add('on'); }
+function unload() { document.getElementById('ov').classList.remove('on'); }
+
+function toast(msg, type = 'in') {
+  const t = document.createElement('div');
+  t.className = `to ${type}`;
+  t.textContent = msg;
+  document.getElementById('ts').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// Dosya sürükle-bırak
+document.body.addEventListener('dragover', e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); document.getElementById('dz').classList.add('over'); } });
+document.body.addEventListener('dragleave', e => { if (!e.relatedTarget || e.relatedTarget === document.documentElement) document.getElementById('dz').classList.remove('over'); });
+document.body.addEventListener('drop', e => {
+  e.preventDefault(); document.getElementById('dz').classList.remove('over');
+  const fs = [...e.dataTransfer.files].filter(f => f.name.toLowerCase().endsWith('.pdf'));
+  if (fs.length) loadFiles(fs);
+});
+</script>
+</body>
+</html>

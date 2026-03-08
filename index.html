@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ambar — Araç Kutusu</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0b0b0e;
+  color: #f0f0f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.glow {
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(232,255,71,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* MARKA */
+.brand {
+  position: fixed;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.brand-dot {
+  width: 7px; height: 7px;
+  background: #e8ff47;
+  border-radius: 50%;
+  animation: blink 2.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
+
+.brand-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.brand-sep { color: #2a2a3a; font-size: 14px; }
+
+.brand-sub {
+  font-size: 11px;
+  color: #3a3a52;
+  letter-spacing: 1px;
+  font-family: monospace;
+}
+
+/* ARAÇ SAYACI */
+.counter {
+  position: fixed;
+  bottom: 28px;
+  right: 32px;
+  font-size: 11px;
+  color: #2a2a3a;
+  letter-spacing: 1px;
+}
+
+/* İPUCU */
+.hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #2a2a3a;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* DOCK */
+.dock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  max-width: 680px;
+  padding: 24px;
+  position: relative;
+  z-index: 5;
+}
+
+/* ARAÇ İTEMİ */
+.tool-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  opacity: 0;
+  animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+@keyframes popIn {
+  from { opacity:0; transform:scale(0.6) translateY(10px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+
+/* İKON KUTUSU */
+.tool-icon-wrap {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border: 1px solid #1c1c2a;
+  background: #111118;
+  transition:
+    transform 0.3s cubic-bezier(.34,1.56,.64,1),
+    box-shadow 0.25s ease,
+    border-color 0.25s,
+    background 0.25s;
+  position: relative;
+  z-index: 2;
+}
+
+.tool-item:hover .tool-icon-wrap {
+  transform: scale(1.3) translateY(-8px);
+}
+
+/* Renk teması */
+.tool-item[data-color="yellow"]:hover .tool-icon-wrap {
+  border-color: rgba(232,255,71,0.45);
+  box-shadow: 0 18px 50px rgba(232,255,71,0.18), 0 0 0 1px rgba(232,255,71,0.12);
+  background: rgba(232,255,71,0.07);
+}
+.tool-item[data-color="blue"]:hover .tool-icon-wrap {
+  border-color: rgba(71,194,255,0.45);
+  box-shadow: 0 18px 50px rgba(71,194,255,0.18), 0 0 0 1px rgba(71,194,255,0.12);
+  background: rgba(71,194,255,0.07);
+}
+.tool-item[data-color="purple"]:hover .tool-icon-wrap {
+  border-color: rgba(167,139,250,0.45);
+  box-shadow: 0 18px 50px rgba(167,139,250,0.18), 0 0 0 1px rgba(167,139,250,0.12);
+  background: rgba(167,139,250,0.07);
+}
+.tool-item[data-color="green"]:hover .tool-icon-wrap {
+  border-color: rgba(52,211,153,0.45);
+  box-shadow: 0 18px 50px rgba(52,211,153,0.18), 0 0 0 1px rgba(52,211,153,0.12);
+  background: rgba(52,211,153,0.07);
+}
+.tool-item[data-color="red"]:hover .tool-icon-wrap {
+  border-color: rgba(255,107,107,0.45);
+  box-shadow: 0 18px 50px rgba(255,107,107,0.18), 0 0 0 1px rgba(255,107,107,0.12);
+  background: rgba(255,107,107,0.07);
+}
+.tool-item[data-color="orange"]:hover .tool-icon-wrap {
+  border-color: rgba(251,146,60,0.45);
+  box-shadow: 0 18px 50px rgba(251,146,60,0.18), 0 0 0 1px rgba(251,146,60,0.12);
+  background: rgba(251,146,60,0.07);
+}
+.tool-item[data-color="pink"]:hover .tool-icon-wrap {
+  border-color: rgba(244,114,182,0.45);
+  box-shadow: 0 18px 50px rgba(244,114,182,0.18), 0 0 0 1px rgba(244,114,182,0.12);
+  background: rgba(244,114,182,0.07);
+}
+
+/* TOOLTIP */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  background: #16161f;
+  border: 1px solid #24242f;
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: 210px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease, transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  z-index: 100;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.7);
+}
+
+.tool-item:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Ok */
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #24242f;
+}
+.tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  margin-top: 1px;
+  border: 5px solid transparent;
+  border-top-color: #16161f;
+  z-index: 1;
+}
+
+.tt-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f0f0f5;
+  margin-bottom: 6px;
+}
+
+.tt-desc {
+  font-size: 12px;
+  color: #666688;
+  line-height: 1.55;
+}
+
+.tt-badge {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.active-badge { background: rgba(232,255,71,0.1); color: #e8ff47; border: 1px solid rgba(232,255,71,0.22); }
+.soon-badge   { background: rgba(255,255,255,0.04); color: #444; border: 1px solid #1e1e2a; }
+
+/* Aktif nokta */
+.tool-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  margin-top: 9px;
+  background: #1e1e2e;
+  transition: background 0.2s;
+}
+.tool-item:not(.soon) .tool-dot { background: #e8ff47; }
+
+/* Yakında olanlar soluk */
+.tool-item.soon .tool-icon-wrap {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+.tool-item.soon { cursor: default; }
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<div class="brand">
+  <div class="brand-dot"></div>
+  <span class="brand-name">Ambar</span>
+  <span class="brand-sep">/</span>
+  <span class="brand-sub">araç kutusu</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ARAÇLAR
+     ═══════════════════════════════════════════════════════════
+     YENİ ARAÇ EKLEMEK İÇİN:
+     1) Aşağıdaki blokları kopyalayıp yapıştır
+     2) href="DOSYA.html" → araç dosyasının adını yaz
+     3) data-color="renk" → yellow/blue/purple/green/red/orange/pink
+     4) Emoji ve metinleri düzenle
+     5) Aktifse class="tool-item", yakındaysa class="tool-item soon"
+     ═══════════════════════════════════════════════════════════ -->
+
+<div class="dock">
+
+  <!-- ✅ AKTİF — PDF EDİTÖR -->
+  <a class="tool-item" href="pdf-editor.html" data-color="yellow" style="animation-delay:0.05s">
+    <div class="tool-icon-wrap">📄</div>
+    <div class="tooltip">
+      <div class="tt-name">PDF Editör</div>
+      <div class="tt-desc">PDF görüntüle, sayfaları yeniden sırala, döndür ve birden fazla PDF'i tek dosyada birleştir.</div>
+      <span class="tt-badge active-badge">Kullanıma Hazır</span>
+    </div>
+    <div class="tool-dot"></div>
+  </a>
+
+  <!-- ⏳ YAKINDA — METİN ARAÇLARI -->
+  <div class="tool-item soon" data-color="blue" style="animation-delay:0.1s">
+    <div class="tool-icon-wrap">📝</div>
+    <div class="tooltip">
+      <div class="tt-name">Metin Araçları</div>
+      <div class="tt-desc">Kelime say, büyük/küçük harf dönüştür, fazla boşlukları temizle.</div>
+      <span class="tt-badge soon-badge">Yakında</span>
+    </div>
+    <div class="tool-dot"></div>
+  </div>
+
+  <!-- ⏳ YAKINDA — GÖRSEL -->
+  <div class="tool-item soon" data-color="purple" style="animation-delay:0.15s">
+    <div class="tool-icon-wrap">🖼️</div>
+    <div class="tooltip">
+      <div class="tt-name">Görsel Araçları</div>
+      <div class="tt-desc">Resim boyutlandır, format dönüştür (PNG/JPG/WebP), sıkıştır.</div>
+      <span class="tt-badge soon-badge">Yakında</span>
+    </div>
+    <div class="tool-dot"></div>
+  </div>
+
+  <!-- ⏳ YAKINDA — QR KOD -->
+  <div class="tool-item soon" data-color="green" style="animation-delay:0.2s">
+    <div class="tool-icon-wrap">📷</div>
+    <div class="tooltip">
+      <div class="tt-name">QR Kod Üretici</div>
+      <div class="tt-desc">URL veya metinden anında QR kod oluştur ve PNG olarak indir.</div>
+      <span class="tt-badge soon-badge">Yakında</span>
+    </div>
+    <div class="tool-dot"></div>
+  </div>
+
+  <!-- ⏳ YAKINDA — HESAP MAKİNESİ -->
+  <div class="tool-item soon" data-color="orange" style="animation-delay:0.25s">
+    <div class="tool-icon-wrap">🔢</div>
+    <div class="tooltip">
+      <div class="tt-name">Hesap Makinesi</div>
+      <div class="tt-desc">Bilimsel hesap makinesi ve birim dönüştürücü.</div>
+      <span class="tt-badge soon-badge">Yakında</span>
+    </div>
+    <div class="tool-dot"></div>
+  </div>
+
+  <!-- ⏳ YAKINDA — ŞİFRE -->
+  <div class="tool-item soon" data-color="red" style="animation-delay:0.3s">
+    <div class="tool-icon-wrap">🔐</div>
+    <div class="tooltip">
+      <div class="tt-name">Şifre Üretici</div>
+      <div class="tt-desc">Güvenli ve rastgele şifreler oluştur, gücünü ölç.</div>
+      <span class="tt-badge soon-badge">Yakında</span>
+    </div>
+    <div class="tool-dot"></div>
+  </div>
+
+</div>
+
+<div class="hint">ikonun üzerine gel → araç hakkında bilgi al</div>
+<div class="counter" id="counter"></div>
+
+<script>
+const active = document.querySelectorAll('.tool-item:not(.soon)').length;
+const total  = document.querySelectorAll('.tool-item').length;
+document.getElementById('counter').textContent = active + ' / ' + total + ' araç aktif';
+</script>
+</body>
+</html>
