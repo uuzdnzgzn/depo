@@ -1,26 +1,56 @@
+<style>
+/* ... diğer stiller aynı kalacak ... */
+
+.dock {
+  display: flex;
+  flex-direction: row; /* Elemanları yatayda dizer */
+  align-items: flex-end; /* İkonların tabanlarını hizalar */
+  justify-content: center;
+  gap: 25px; /* İkonlar arası boşluk */
+  flex-wrap: nowrap; /* Geniş ekranlarda tek satırda tutar */
+  max-width: 90vw; /* Ekran genişliğine göre sınırlandırır */
+  padding: 40px;
+  position: relative;
+  z-index: 5;
+  overflow-x: auto; /* Mobilde taşma olursa kaydırma sağlar */
+}
+
+/* Mobilde ikonların çok küçülmemesi için */
+@media (max-width: 600px) {
+  .dock {
+    gap: 15px;
+    padding: 20px;
+  }
+}
+</style>
+
 <div class="dock">
 
   <a class="tool-item" href="pdf-editor.html" data-color="yellow" style="animation-delay:0.05s">
     <div class="tool-icon-wrap">📄</div>
     <div class="tooltip">
       <div class="tt-name">PDF Editör</div>
-      <div class="tt-desc">PDF görüntüle, sayfaları yeniden sırala, döndür ve birden fazla PDF'i tek dosyada birleştir.</div>
-      <span class="tt-badge active-badge">Kullanıma Hazır</span>
+      <div class="tt-desc">PDF görüntüle, sayfaları yeniden sırala ve birleştir.</div>
+      <span class="tt-badge active-badge">Hazır</span>
     </div>
     <div class="tool-dot"></div>
-  </a> <a class="tool-item" href="Defter.html" data-color="blue" style="animation-delay:0.1s">
+  </a>
+
+  <a class="tool-item" href="Defter.html" data-color="blue" style="animation-delay:0.1s">
     <div class="tool-icon-wrap">📜</div>
     <div class="tooltip">
-      <div class="tt-name">Defter.html</div>
-      <div class="tt-desc">Defter uygulaması ile dökümanlarını düzenle</div>
-      <span class="tt-badge active-badge">Kullanıma Hazır</span>
+      <div class="tt-name">Defter</div>
+      <div class="tt-desc">Notlarını dijital ortamda düzenle.</div>
+      <span class="tt-badge active-badge">Hazır</span>
     </div>
     <div class="tool-dot"></div>
-  </a> <div class="tool-item soon" data-color="purple" style="animation-delay:0.15s">
+  </a>
+
+  <div class="tool-item soon" data-color="purple" style="animation-delay:0.15s">
     <div class="tool-icon-wrap">🖼️</div>
     <div class="tooltip">
       <div class="tt-name">Görsel Araçları</div>
-      <div class="tt-desc">Resim boyutlandır, format dönüştür (PNG/JPG/WebP), sıkıştır.</div>
+      <div class="tt-desc">Boyutlandır ve format dönüştür.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
@@ -29,8 +59,8 @@
   <div class="tool-item soon" data-color="green" style="animation-delay:0.2s">
     <div class="tool-icon-wrap">📷</div>
     <div class="tooltip">
-      <div class="tt-name">QR Kod Üretici</div>
-      <div class="tt-desc">URL veya metinden anında QR kod oluştur ve PNG olarak indir.</div>
+      <div class="tt-name">QR Kod</div>
+      <div class="tt-desc">Anında QR kod oluştur.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
@@ -40,7 +70,7 @@
     <div class="tool-icon-wrap">🔢</div>
     <div class="tooltip">
       <div class="tt-name">Hesap Makinesi</div>
-      <div class="tt-desc">Bilimsel hesap makinesi ve birim dönüştürücü.</div>
+      <div class="tt-desc">Bilimsel hesaplamalar yap.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
@@ -50,7 +80,7 @@
     <div class="tool-icon-wrap">🔐</div>
     <div class="tooltip">
       <div class="tt-name">Şifre Üretici</div>
-      <div class="tt-desc">Güvenli ve rastgele şifreler oluştur, gücünü ölç.</div>
+      <div class="tt-desc">Güçlü şifreler oluştur.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
