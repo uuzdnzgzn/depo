@@ -17,7 +17,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow-x: hidden; /* Yatay taşmayı gizle */
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -53,6 +53,7 @@ body::before {
   align-items: center;
   gap: 10px;
   z-index: 10;
+  white-space: nowrap;
 }
 
 .brand-dot {
@@ -60,6 +61,7 @@ body::before {
   background: #e8ff47;
   border-radius: 50%;
   animation: blink 2.5s ease-in-out infinite;
+  flex-shrink: 0;
 }
 @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.5)} }
 
@@ -71,19 +73,50 @@ body::before {
   text-transform: uppercase;
 }
 
-/* DOCK - YATAY DİZİLİM AYARLARI */
+.brand-sep { color: #2a2a3a; font-size: 14px; }
+
+.brand-sub {
+  font-size: 11px;
+  color: #3a3a52;
+  letter-spacing: 1px;
+  font-family: monospace;
+}
+
+/* ARAÇ SAYACI */
+.counter {
+  position: fixed;
+  bottom: 28px;
+  right: 32px;
+  font-size: 11px;
+  color: #2a2a3a;
+  letter-spacing: 1px;
+}
+
+/* İPUCU */
+.hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: #2a2a3a;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* DOCK - YATAY DİZİLİM DÜZELTMESİ */
 .dock {
   display: flex;
-  flex-direction: row; /* Yan yana diz */
-  flex-wrap: nowrap;    /* Alt satıra geçmeyi zorla engelle */
+  flex-direction: row; /* Yatay diz */
   align-items: center;
   justify-content: center;
   gap: 20px;
-  padding: 40px;
+  flex-wrap: nowrap; /* Alt satıra geçmeyi engelle */
+  width: max-content; /* İçeriğe göre genişle */
+  max-width: 95vw;
+  padding: 24px;
   position: relative;
   z-index: 5;
-  width: max-content;   /* İçeriği kadar genişlesin */
-  max-width: 95vw;
 }
 
 /* ARAÇ İTEMİ */
@@ -96,7 +129,7 @@ body::before {
   text-decoration: none;
   opacity: 0;
   animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1) forwards;
-  flex-shrink: 0; /* İkonların sıkışmasını engeller */
+  flex-shrink: 0; /* Küçülmeyi engelle */
 }
 
 @keyframes popIn {
@@ -104,8 +137,10 @@ body::before {
   to   { opacity:1; transform:scale(1) translateY(0); }
 }
 
+/* İKON KUTUSU */
 .tool-icon-wrap {
-  width: 66px; height: 66px;
+  width: 66px;
+  height: 66px;
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -113,53 +148,61 @@ body::before {
   font-size: 30px;
   border: 1px solid #1c1c2a;
   background: #111118;
-  transition: all 0.3s cubic-bezier(.34,1.56,.64,1);
+  transition:
+    transform 0.3s cubic-bezier(.34,1.56,.64,1),
+    box-shadow 0.25s ease,
+    border-color 0.25s,
+    background 0.25s;
+  position: relative;
+  z-index: 2;
 }
 
 .tool-item:hover .tool-icon-wrap {
-  transform: scale(1.2) translateY(-5px);
+  transform: scale(1.3) translateY(-8px);
 }
 
-/* Renkler */
-.tool-item[data-color="yellow"]:hover .tool-icon-wrap { border-color: #e8ff47; box-shadow: 0 10px 30px rgba(232,255,71,0.15); }
-.tool-item[data-color="blue"]:hover .tool-icon-wrap { border-color: #47c2ff; box-shadow: 0 10px 30px rgba(71,194,255,0.15); }
-.tool-item[data-color="purple"]:hover .tool-icon-wrap { border-color: #a78bfa; box-shadow: 0 10px 30px rgba(167,139,250,0.15); }
-.tool-item[data-color="green"]:hover .tool-icon-wrap { border-color: #34d399; box-shadow: 0 10px 30px rgba(52,211,153,0.15); }
-.tool-item[data-color="orange"]:hover .tool-icon-wrap { border-color: #fb923c; box-shadow: 0 10px 30px rgba(251,146,60,0.15); }
-.tool-item[data-color="red"]:hover .tool-icon-wrap { border-color: #ff6b6b; box-shadow: 0 10px 30px rgba(255,107,107,0.15); }
+/* Renk temaları */
+.tool-item[data-color="yellow"]:hover .tool-icon-wrap { border-color: rgba(232,255,71,0.45); box-shadow: 0 18px 50px rgba(232,255,71,0.18); background: rgba(232,255,71,0.07); }
+.tool-item[data-color="blue"]:hover .tool-icon-wrap { border-color: rgba(71,194,255,0.45); box-shadow: 0 18px 50px rgba(71,194,255,0.18); background: rgba(71,194,255,0.07); }
+.tool-item[data-color="purple"]:hover .tool-icon-wrap { border-color: rgba(167,139,250,0.45); box-shadow: 0 18px 50px rgba(167,139,250,0.18); background: rgba(167,139,250,0.07); }
+.tool-item[data-color="green"]:hover .tool-icon-wrap { border-color: rgba(52,211,153,0.45); box-shadow: 0 18px 50px rgba(52,211,153,0.18); background: rgba(52,211,153,0.07); }
+.tool-item[data-color="red"]:hover .tool-icon-wrap { border-color: rgba(255,107,107,0.45); box-shadow: 0 18px 50px rgba(255,107,107,0.18); background: rgba(255,107,107,0.07); }
+.tool-item[data-color="orange"]:hover .tool-icon-wrap { border-color: rgba(251,146,60,0.45); box-shadow: 0 18px 50px rgba(251,146,60,0.18); background: rgba(251,146,60,0.07); }
 
 /* TOOLTIP */
 .tooltip {
   position: absolute;
-  bottom: calc(100% + 15px);
+  bottom: calc(100% + 20px);
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
+  transform: translateX(-50%) translateY(8px);
   background: #16161f;
   border: 1px solid #24242f;
-  border-radius: 12px;
-  padding: 12px;
-  width: 180px;
+  border-radius: 14px;
+  padding: 14px 16px;
+  width: 210px;
   pointer-events: none;
   opacity: 0;
-  transition: all 0.2s ease;
+  transition: opacity 0.18s ease, transform 0.25s cubic-bezier(.34,1.56,.64,1);
   z-index: 100;
-  text-align: center;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.7);
 }
 
-.tool-item:hover .tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
+.tool-item:hover .tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
-.tt-name { font-size: 13px; font-weight: 700; color: #f0f0f5; margin-bottom: 4px; }
-.tt-desc { font-size: 11px; color: #666688; line-height: 1.4; }
-.tt-badge { display: inline-block; margin-top: 8px; font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
-.active-badge { background: rgba(232,255,71,0.1); color: #e8ff47; }
-.soon-badge { background: #1e1e2a; color: #555; }
+.tt-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: #f0f0f5; margin-bottom: 6px; }
+.tt-desc { font-size: 12px; color: #666688; line-height: 1.55; }
+.tt-badge { display: inline-block; margin-top: 10px; font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 6px; text-transform: uppercase; }
+.active-badge { background: rgba(232,255,71,0.1); color: #e8ff47; border: 1px solid rgba(232,255,71,0.22); }
+.soon-badge   { background: rgba(255,255,255,0.04); color: #444; border: 1px solid #1e1e2a; }
 
-.tool-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 10px; background: #1e1e2e; }
+/* Aktif nokta */
+.tool-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 9px; background: #1e1e2e; transition: background 0.2s; }
 .tool-item:not(.soon) .tool-dot { background: #e8ff47; }
 .tool-item.soon .tool-icon-wrap { opacity: 0.3; filter: grayscale(1); }
-
-.hint { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #2a2a3a; }
-.counter { position: fixed; bottom: 28px; right: 32px; font-size: 11px; color: #2a2a3a; }
+.tool-item.soon { cursor: default; }
 </style>
 </head>
 <body>
@@ -169,74 +212,77 @@ body::before {
 <div class="brand">
   <div class="brand-dot"></div>
   <span class="brand-name">Ambar</span>
+  <span class="brand-sep">/</span>
+  <span class="brand-sub">araç kutusu</span>
 </div>
 
 <div class="dock">
-  <a class="tool-item" href="pdf-editor.html" data-color="yellow" style="animation-delay:0.1s">
+
+  <a class="tool-item" href="pdf-editor.html" data-color="yellow" style="animation-delay:0.05s">
     <div class="tool-icon-wrap">📄</div>
     <div class="tooltip">
       <div class="tt-name">PDF Editör</div>
-      <div class="tt-desc">PDF'leri düzenle ve birleştir.</div>
-      <span class="tt-badge active-badge">Hazır</span>
+      <div class="tt-desc">PDF görüntüle, sayfaları yeniden sırala ve birleştir.</div>
+      <span class="tt-badge active-badge">Kullanıma Hazır</span>
     </div>
     <div class="tool-dot"></div>
-  </a>
-
-  <a class="tool-item" href="Defter.html" data-color="blue" style="animation-delay:0.2s">
+  </a> <a class="tool-item" href="Defter.html" data-color="blue" style="animation-delay:0.1s">
     <div class="tool-icon-wrap">📜</div>
     <div class="tooltip">
       <div class="tt-name">Defter</div>
-      <div class="tt-desc">Notlarını düzenle.</div>
-      <span class="tt-badge active-badge">Hazır</span>
+      <div class="tt-desc">Dökümanlarını düzenle.</div>
+      <span class="tt-badge active-badge">Kullanıma Hazır</span>
     </div>
     <div class="tool-dot"></div>
-  </a>
-
-  <div class="tool-item soon" data-color="purple" style="animation-delay:0.3s">
+  </a> <div class="tool-item soon" data-color="purple" style="animation-delay:0.15s">
     <div class="tool-icon-wrap">🖼️</div>
     <div class="tooltip">
-      <div class="tt-name">Görsel</div>
+      <div class="tt-name">Görsel Araçları</div>
+      <div class="tt-desc">Resim boyutlandır ve format dönüştür.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
   </div>
 
-  <div class="tool-item soon" data-color="green" style="animation-delay:0.4s">
+  <div class="tool-item soon" data-color="green" style="animation-delay:0.2s">
     <div class="tool-icon-wrap">📷</div>
     <div class="tooltip">
-      <div class="tt-name">QR Kod</div>
+      <div class="tt-name">QR Kod Üretici</div>
+      <div class="tt-desc">Hızlıca QR kod oluştur.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
   </div>
 
-  <div class="tool-item soon" data-color="orange" style="animation-delay:0.5s">
+  <div class="tool-item soon" data-color="orange" style="animation-delay:0.25s">
     <div class="tool-icon-wrap">🔢</div>
     <div class="tooltip">
-      <div class="tt-name">Hesapla</div>
+      <div class="tt-name">Hesap Makinesi</div>
+      <div class="tt-desc">Bilimsel hesaplamalar yap.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
   </div>
 
-  <div class="tool-item soon" data-color="red" style="animation-delay:0.6s">
+  <div class="tool-item soon" data-color="red" style="animation-delay:0.3s">
     <div class="tool-icon-wrap">🔐</div>
     <div class="tooltip">
-      <div class="tt-name">Şifre</div>
+      <div class="tt-name">Şifre Üretici</div>
+      <div class="tt-desc">Güvenli şifreler oluştur.</div>
       <span class="tt-badge soon-badge">Yakında</span>
     </div>
     <div class="tool-dot"></div>
   </div>
+
 </div>
 
-<div class="hint">İkonun üzerine gel → Bilgi al</div>
+<div class="hint">ikonun üzerine gel → araç hakkında bilgi al</div>
 <div class="counter" id="counter"></div>
 
 <script>
 const active = document.querySelectorAll('.tool-item:not(.soon)').length;
 const total  = document.querySelectorAll('.tool-item').length;
-document.getElementById('counter').textContent = active + ' / ' + total + ' aktif';
+document.getElementById('counter').textContent = active + ' / ' + total + ' araç aktif';
 </script>
-
 </body>
 </html>
