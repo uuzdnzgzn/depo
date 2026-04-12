@@ -536,7 +536,8 @@ textarea.mta:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-
       <div class="print-opts">
         <div class="po-item"><input type="checkbox" id="pr-header" checked onchange="updatePrintPreview()"><label for="pr-header">Üst Kurum Başlığını Yazdır</label></div>
         <div class="po-item"><input type="checkbox" id="pr-sigs" checked onchange="updatePrintPreview()"><label for="pr-sigs">Alt İmza Bloğunu Yazdır</label></div>
-        <div class="po-item"><input type="checkbox" id="pr-daynames" checked onchange="updatePrintPreview()"><label for="pr-daynames">Tarihlerin yanına günü yaz</label></div>
+        <!-- Gün ismi yazdırmayı varsayılan olarak kapalı (işaretsiz) yaptık -->
+        <div class="po-item"><input type="checkbox" id="pr-daynames" onchange="updatePrintPreview()"><label for="pr-daynames">Tarihlerin yanına günü yaz</label></div>
         <div class="po-item"><input type="checkbox" id="pr-pagebr" onchange="updatePrintPreview()"><label for="pr-pagebr">Aylar arası yeni sayfaya geç</label></div>
       </div>
     </div>
